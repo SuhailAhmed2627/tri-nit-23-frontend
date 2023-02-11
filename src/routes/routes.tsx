@@ -1,6 +1,13 @@
 import React from "react";
 import "./types.d";
-import { LandingPage, ViewGraph, Login, Signup, Dashboard } from "../pages";
+import {
+	LandingPage,
+	ViewGraph,
+	Login,
+	Signup,
+	Dashboard,
+	EntityPage,
+} from "../pages";
 
 export const routes: RouteType[] = [
 	{
@@ -10,7 +17,7 @@ export const routes: RouteType[] = [
 		description: "Landing Page",
 	},
 	{
-		path: "/graph",
+		path: "/graph/:id",
 		element: <ViewGraph />,
 		title: "Graph",
 		description: "Graph Page",
@@ -32,5 +39,11 @@ export const routes: RouteType[] = [
 		element: <Dashboard />,
 		title: "Dashboard",
 		description: "Dashboard Page",
+	},
+	{
+		path: "/entity/:id",
+		element: <EntityPage />,
+		title: "Entity",
+		description: "Entity Page",
 	},
 ];

@@ -4,8 +4,10 @@ import { Graph } from "../../components";
 import { dataFetch, getUser } from "../../utils/helpers";
 import { useQuery } from "react-query";
 import { CustomNode } from "../../type";
+import { useParams } from "react-router-dom";
 
 const ViewGraph = () => {
+	const { id } = useParams();
 	const user = getUser();
 	const [nodes, setNodes] = React.useState<CustomNode[] | null>(null);
 
@@ -27,7 +29,7 @@ const ViewGraph = () => {
 		queryKey: ["nodes", user],
 		queryFn: () =>
 			dataFetch({
-				url: "/api/nodes",
+				url: "/api/nodes/" + id,
 				method: "GET",
 				user,
 			}),

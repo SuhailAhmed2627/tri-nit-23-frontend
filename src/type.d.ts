@@ -11,3 +11,8 @@ interface CustomNode {
 	size?: number;
 	color: string;
 }
+
+export type EntityType = {
+	id: string;
+	name: string;
+};

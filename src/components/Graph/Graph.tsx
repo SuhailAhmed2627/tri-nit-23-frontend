@@ -14,6 +14,7 @@ import AbstractGraph, { Attributes } from "graphology-types";
 import { initToGraph, addNodeToGraph } from "./utils";
 import { showNotification } from "../../utils/helpers";
 import { CustomNode } from "../../type";
+import { Signup } from "../../pages";
 
 export const displayGraph = (
 	setSigma: React.Dispatch<
@@ -26,6 +27,9 @@ export const displayGraph = (
 		<SigmaContainer
 			style={{ height: window.innerHeight - 200, width: window.innerWidth }}
 			ref={setSigma}
+			settings={{
+				defaultNodeColor: "#ec5148",
+			}}
 		>
 			<ControlsContainer position={"bottom-right"}>
 				<ZoomControl />
@@ -43,15 +47,7 @@ const Graph = ({ initialNodes }: { initialNodes: CustomNode[] }) => {
 			const graph = sigma.getGraph();
 
 			// set default node size
-			initToGraph(
-				graph,
-				initialNodes.map((node) => {
-					return {
-						...node,
-						size: 30,
-					};
-				})
-			);
+			initToGraph(graph, initialNodes);
 		} else {
 			showNotification("error", "Sigma is not initialized", "error");
 		}
@@ -61,7 +57,19 @@ const Graph = ({ initialNodes }: { initialNodes: CustomNode[] }) => {
 			switch (data.type) {
 				case "NODES":
 					if (sigma) {
-						addNodeToGraph(sigma.getGraph(), data.body);
+						addNodeToGraph(sigma.getGraph(), data.data.nodes);
+					} else {
+						showNotification(
+							"error",
+							"Sigma is not initialized",
+							"error"
+						);
+					}
+					break;
+
+				case "NODE":
+					if (sigma) {
+						addNodeToGraph(sigma.getGraph(), [data.data.node]);
 					} else {
 						showNotification(
 							"error",
@@ -73,6 +81,7 @@ const Graph = ({ initialNodes }: { initialNodes: CustomNode[] }) => {
 				default:
 					break;
 			}
+			sigma?.refresh();
 		};
 
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment

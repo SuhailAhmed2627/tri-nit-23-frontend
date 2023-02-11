@@ -3,6 +3,8 @@ const mutations = {
 	LOGIN: "LOGIN",
 };
 
-const queries = {};
+const queries = {
+	ENTITIES: "ENTITIES",
+};
 
 export { mutations, queries };

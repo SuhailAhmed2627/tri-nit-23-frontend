@@ -38,7 +38,7 @@ const Login = () => {
 
 			showNotification("success", "Signup successful", "success");
 
-			navigate("/graph");
+			navigate("/dashboard");
 		},
 	});
 
