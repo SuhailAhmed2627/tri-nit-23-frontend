@@ -8,7 +8,7 @@ import "./App.css";
 import { NotificationsProvider } from "@mantine/notifications";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { PersistGate } from "redux-persist/integration/react";
-
+import { BACKEND_URL } from "../config";
 const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
@@ -24,7 +24,7 @@ const protocol =
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 window.socket = new WebSocket(
-	protocol + "://" + document.location.host + "/ws/"
+	protocol + "://" + BACKEND_URL.replace("http://", "") + "/ws"
 );
 
 const appendCache = createEmotionCache({ key: "mantine", prepend: false });

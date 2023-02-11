@@ -1,4 +1,7 @@
-const mutations = {};
+const mutations = {
+	SIGNUP: "SIGNUP",
+	LOGIN: "LOGIN",
+};
 
 const queries = {};
 

@@ -13,6 +13,7 @@ import AbstractGraph, { Attributes } from "graphology-types";
 
 import { initToGraph, addNodeToGraph } from "./utils";
 import { showNotification } from "../../utils/helpers";
+import { CustomNode } from "../../type";
 
 export const displayGraph = (
 	setSigma: React.Dispatch<
@@ -33,40 +34,34 @@ export const displayGraph = (
 		</SigmaContainer>
 	);
 };
-const Graph = () => {
+
+const Graph = ({ initialNodes }: { initialNodes: CustomNode[] }) => {
 	const [sigma, setSigma] = useState<Sigma | null>(null);
 
 	useEffect(() => {
 		if (sigma) {
 			const graph = sigma.getGraph();
 
-			// Init Graph
-			initToGraph(graph, [
-				{
-					id: "n0",
-					label: "Node 0",
-					x: 0,
-					y: 0,
-					size: 30,
-					color: "#f00",
-				},
-				{
-					id: "n1",
-					label: "Node 1",
-					x: 3,
-					y: 1,
-					size: 20,
-					color: "#0f0",
-				},
-			]);
+			// set default node size
+			initToGraph(
+				graph,
+				initialNodes.map((node) => {
+					return {
+						...node,
+						size: 30,
+					};
+				})
+			);
+		} else {
+			showNotification("error", "Sigma is not initialized", "error");
 		}
 
 		const handleSocketMessage = (event: MessageEvent) => {
 			const data = JSON.parse(event.data);
 			switch (data.type) {
-				case "UPDATE_NODE":
+				case "NODES":
 					if (sigma) {
-						addNodeToGraph(sigma.getGraph(), data.payload);
+						addNodeToGraph(sigma.getGraph(), data.body);
 					} else {
 						showNotification(
 							"error",

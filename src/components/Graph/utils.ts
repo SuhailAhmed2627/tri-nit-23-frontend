@@ -29,3 +29,16 @@ export const addNodeToGraph = (graph: Graph, nodes: CustomNode[]) => {
 		});
 	});
 };
+
+export const generateRandomNodes = (count: number): CustomNode[] => {
+	const nodes: CustomNode[] = [];
+	for (let i = 0; i < count; i++) {
+		nodes.push({
+			id: i.toString(),
+			x: Math.floor(Math.random() * 100),
+			y: Math.floor(Math.random() * 100),
+			color: "#000",
+		});
+	}
+	return nodes;
+};
