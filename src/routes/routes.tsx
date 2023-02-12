@@ -17,12 +17,6 @@ export const routes: RouteType[] = [
 		description: "Landing Page",
 	},
 	{
-		path: "/graph/:id",
-		element: <ViewGraph />,
-		title: "Graph",
-		description: "Graph Page",
-	},
-	{
 		path: "/login",
 		element: <Login />,
 		title: "Login",

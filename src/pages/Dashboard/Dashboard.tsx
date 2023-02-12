@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
 	Box,
 	Button,
@@ -9,8 +9,9 @@ import {
 } from "@mantine/core";
 import { dataFetch, getUser, showNotification } from "../../utils/helpers";
 import { useNavigate } from "react-router-dom";
-import { EntityType } from "../../type";
+import { CustomNode, EntityType } from "../../type";
 import { useMutation, useQuery } from "react-query";
+import { Graph } from "../../components";
 
 const Dashboard = () => {
 	const user = getUser();
@@ -18,6 +19,22 @@ const Dashboard = () => {
 
 	const [entities, setEntities] = useState<EntityType[] | null>(null);
 	const [newEntityName, setNewEntityName] = useState<string>("");
+	const [nodes, setNodes] = useState<CustomNode[] | null>(null);
+
+	useEffect(() => {
+		if (!user || !user.userToken) {
+			return;
+		}
+		console.log("Connecting to socket");
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		window.socket.send(
+			JSON.stringify({
+				type: "AUTH_USER",
+				data: user.userToken,
+			})
+		);
+	}, []);
 
 	const { isLoading, isError, refetch } = useQuery({
 		queryKey: ["entities"],
@@ -102,6 +119,11 @@ const Dashboard = () => {
 					Create
 				</Button>
 			</Box>
+			{nodes && (
+				<Box className="w-full">
+					<Graph initialNodes={nodes} />
+				</Box>
+			)}
 		</Box>
 	);
 };

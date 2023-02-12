@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { dataFetch, getUser, showNotification } from "../../utils/helpers";
 import { useMutation, useQuery } from "react-query";
-import { Button, SimpleGrid, TextInput } from "@mantine/core";
+import { Box, Button, SimpleGrid, TextInput } from "@mantine/core";
+import { CustomNode } from "../../type";
+import { Graph } from "../../components";
 
 type Param = {
 	id: number;
@@ -13,6 +15,7 @@ type Param = {
 const EntityPage = () => {
 	const { id } = useParams();
 	const [params, setParams] = React.useState<Param[] | null>(null);
+	const [nodes, setNodes] = useState<CustomNode[] | null>(null);
 	const user = getUser();
 
 	const navigate = useNavigate();
@@ -58,6 +61,30 @@ const EntityPage = () => {
 		},
 	});
 
+	useEffect(() => {
+		if (!user || !user.userToken) {
+			return;
+		}
+
+		const handleSocketMessage = (event: MessageEvent) => {
+			console.log(event.data);
+			const data = JSON.parse(event.data);
+			if (data.type === "NODES") {
+				setNodes(data.data);
+			}
+		};
+
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		window.socket.addEventListener("message", handleSocketMessage);
+
+		return () => {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			window.socket.removeEventListener("message", handleSocketMessage);
+		};
+	}, []);
+
 	if (isLoading) {
 		return <div>Loading...</div>;
 	}
@@ -68,68 +95,77 @@ const EntityPage = () => {
 
 	if (params !== null) {
 		return (
-			<SimpleGrid cols={3} spacing={10}>
-				<div>Name</div>
-				<div>Type</div>
-				<div>-</div>
-				{params.map((param) => (
-					<>
-						<div key={param.keyName}>{param.keyName}</div>
-						<div key={param.type}>{param.type}</div>
-						<div key={param.keyName + param.type}>
-							<TextInput
-								id={param.keyName + param.type}
-								placeholder="Enter Value"
-							/>
-						</div>
-					</>
-				))}
-				<Button
-					onClick={() => {
-						const temp = params.map((param) => {
-							const input = document.getElementById(
-								param.keyName + param.type
-							) as HTMLInputElement;
+			<Box className="w-full">
+				<SimpleGrid cols={3} spacing={10}>
+					<div>Name</div>
+					<div>Type</div>
+					<div>-</div>
+					{params.map((param) => (
+						<>
+							<div key={param.keyName}>{param.keyName}</div>
+							<div key={param.type}>{param.type}</div>
+							<div key={param.keyName + param.type}>
+								<TextInput
+									id={param.keyName + param.type}
+									placeholder="Enter Value"
+								/>
+							</div>
+						</>
+					))}
+					<Button
+						onClick={() => {
+							const temp = params.map((param) => {
+								const input = document.getElementById(
+									param.keyName + param.type
+								) as HTMLInputElement;
 
-							if (input === null) {
-								return;
-							}
+								if (input === null) {
+									return;
+								}
 
-							if (input.value === "") {
-								return;
-							}
+								if (input.value === "") {
+									return;
+								}
 
-							let value: string | number = input.value;
+								let value: string | number = input.value;
 
-							if (param.type === "INT") {
-								value = Number(value);
-							}
+								if (param.type === "INT") {
+									value = Number(value);
+								}
 
-							return {
-								newValue: value,
-								paramId: param.id,
-							};
-						});
+								return {
+									newValue: value,
+									paramId: param.id,
+								};
+							});
 
-						const data: {
-							[key: number]: string | number;
-						} = {};
+							const data: {
+								[key: number]: string | number;
+							} = {};
 
-						temp.forEach((item) => {
-							if (item === undefined) {
-								return;
-							}
+							temp.forEach((item) => {
+								if (item === undefined) {
+									return;
+								}
 
-							data[item.paramId] = item.newValue;
-						});
+								data[item.paramId] = item.newValue;
+							});
 
-						addData.mutate(data);
-					}}
-				>
-					Add Data
-				</Button>
-				<Button onClick={() => navigate(`/graph/${id}`)}>View Graph</Button>
-			</SimpleGrid>
+							addData.mutate(data);
+						}}
+					>
+						Add Data
+					</Button>
+					<Button onClick={() => navigate(`/graph/${id}`)}>
+						View Graph
+					</Button>
+				</SimpleGrid>
+				{nodes && (
+					<Box className="w-full">
+						<Graph initialNodes={nodes} />
+					</Box>
+				)}
+			</Box>
 		);
 	}
 

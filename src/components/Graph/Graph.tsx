@@ -47,52 +47,60 @@ const Graph = ({ initialNodes }: { initialNodes: CustomNode[] }) => {
 			const graph = sigma.getGraph();
 
 			// set default node size
-			initToGraph(graph, initialNodes);
+			initToGraph(
+				graph,
+				initialNodes.map((node) => {
+					return {
+						...node,
+						size: 10,
+					};
+				})
+			);
 		} else {
 			showNotification("error", "Sigma is not initialized", "error");
 		}
 
-		const handleSocketMessage = (event: MessageEvent) => {
-			const data = JSON.parse(event.data);
-			switch (data.type) {
-				case "NODES":
-					if (sigma) {
-						addNodeToGraph(sigma.getGraph(), data.data.nodes);
-					} else {
-						showNotification(
-							"error",
-							"Sigma is not initialized",
-							"error"
-						);
-					}
-					break;
+		// const handleSocketMessage = (event: MessageEvent) => {
+		// 	const data = JSON.parse(event.data);
+		// 	switch (data.type) {
+		// 		case "NODES":
+		// 			if (sigma) {
+		// 				addNodeToGraph(sigma.getGraph(), data.data.nodes);
+		// 			} else {
+		// 				showNotification(
+		// 					"error",
+		// 					"Sigma is not initialized",
+		// 					"error"
+		// 				);
+		// 			}
+		// 			break;
 
-				case "NODE":
-					if (sigma) {
-						addNodeToGraph(sigma.getGraph(), [data.data.node]);
-					} else {
-						showNotification(
-							"error",
-							"Sigma is not initialized",
-							"error"
-						);
-					}
-					break;
-				default:
-					break;
-			}
-			sigma?.refresh();
-		};
+		// 		case "NODE":
+		// 			if (sigma) {
+		// 				addNodeToGraph(sigma.getGraph(), [data.data.node]);
+		// 			} else {
+		// 				showNotification(
+		// 					"error",
+		// 					"Sigma is not initialized",
+		// 					"error"
+		// 				);
+		// 			}
+		// 			break;
+		// 		default:
+		// 			break;
+		// 	}
+		// 	sigma?.refresh();
+		// };
 
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
-		window.socket.addEventListener("message", handleSocketMessage);
+		// window.socket.addEventListener("message", handleSocketMessage);
 
-		return function cleanupListener() {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			window.socket.removeEventListener("message", handleSocketMessage);
-		};
+		// return function cleanupListener() {
+		// 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// 	// @ts-ignore
+		// 	window.socket.removeEventListener("message", handleSocketMessage);
+		// };
 	}, [sigma]);
 
 	return (
